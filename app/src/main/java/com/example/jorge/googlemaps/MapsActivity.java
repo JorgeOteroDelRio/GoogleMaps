@@ -188,6 +188,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapClick(LatLng latLng) {
         float distanciaPremio = marcaUbicacion.distanceTo(mLastLocation);
+        Toast.makeText(this, "Distancia al premio = " + distanciaPremio + " m", Toast.LENGTH_SHORT).show();
         if(distanciaPremio <= 20){
             CircleOptions circuloMarca = new CircleOptions()
                     .center(MARCA)
