@@ -78,14 +78,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onStop();
     }
 
-    private boolean checkLocationPermission() {
-        String permission = "android.permission.ACCESS_FINE_LOCATION";
-        String permission2 = "android.permission.ACCESS_COARSE_LOCATION";
-        int res = getBaseContext().checkCallingOrSelfPermission(permission);
-        int res2 = getBaseContext().checkCallingOrSelfPermission(permission2);
-        return ((res == PackageManager.PERMISSION_GRANTED) && (res2 == PackageManager.PERMISSION_GRANTED));
-    }
-
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
