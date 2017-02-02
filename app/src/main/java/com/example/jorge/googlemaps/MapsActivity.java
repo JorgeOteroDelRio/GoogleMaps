@@ -46,6 +46,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
 
+
+
         //Ponemos la latitud y la longitud de la marca a la localizacion de la marca
         marcaUbicacion.setLatitude(MARCA.latitude);
         marcaUbicacion.setLongitude(MARCA.longitude);
@@ -90,7 +92,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
+        mMap.setOnMapClickListener(this);
 
         CircleOptions area = new CircleOptions()
                 .center(CENTRO)
