@@ -25,7 +25,7 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, GoogleMap.OnMapClickListener {
 
     private GoogleApiClient mGoogleApiClient;
     private static final int LOCATION_REQUEST_CODE = 1;
@@ -35,6 +35,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private final LatLng CENTRO = new LatLng(42.237558, -8.717285);
     private SupportMapFragment mapFragment;
     private LocationManager locationManager;
+    Location marcaUbicacion =new Location("mi marca");
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +45,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
+
+        //Ponemos la latitud y la longitud de la marca a la localizacion de la marca
+        marcaUbicacion.setLatitude(MARCA.latitude);
+        marcaUbicacion.setLongitude(MARCA.longitude);
 
         // Create an instance of GoogleAPIClient.
         if (mGoogleApiClient == null) {
@@ -57,6 +63,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
 
     }
+
+
 
     @Override
     protected void onStart() {
@@ -91,14 +99,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        CircleOptions circuloMarca = new CircleOptions()
-                .center(MARCA)
-                .radius(20)
-                .strokeColor(Color.parseColor("#FF4000"))
-                .strokeWidth(4)
-                .fillColor(Color.argb(32, 33, 150, 243));
-        mMap.addMarker(new MarkerOptions().position(MARCA).title("Premio"));
-        mMap.addCircle(circuloMarca).setVisible(true);
+
         CircleOptions area = new CircleOptions()
                 .center(CENTRO)
                 .radius(100)
@@ -157,13 +158,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onConnected(Bundle connectionHint) {
-        if(checkLocationPermission()) {
-            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                    mGoogleApiClient);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             if (mLastLocation != null) {
                 System.out.println("Latitud: " + mLastLocation.getLatitude() + "\nLongitud: " + mLastLocation.getLongitude());
             }
-        }
+
     }
 
     @Override
@@ -174,5 +183,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
+    }
+
+    @Override
+    public void onMapClick(LatLng latLng) {
+        float distanciaPremio = marcaUbicacion.distanceTo(mLastLocation);
+        if(distanciaPremio <= 20){
+            CircleOptions circuloMarca = new CircleOptions()
+                    .center(MARCA)
+                    .radius(20)
+                    .strokeColor(Color.parseColor("#FF4000"))
+                    .strokeWidth(4)
+                    .fillColor(Color.argb(32, 33, 150, 243));
+            //mMap.addMarker(new MarkerOptions().position(MARCA).title("Premio"));
+            mMap.addCircle(circuloMarca).setVisible(true);
+        }
     }
 }
