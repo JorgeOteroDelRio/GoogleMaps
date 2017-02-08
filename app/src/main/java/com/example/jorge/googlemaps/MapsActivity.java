@@ -2,16 +2,19 @@ package com.example.jorge.googlemaps;
 
 import android.*;
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.hardware.Camera;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -34,7 +37,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private final LatLng MARCA = new LatLng(42.237023, -8.717944);
     private final LatLng CENTRO = new LatLng(42.237558, -8.717285);
     private SupportMapFragment mapFragment;
-    private LocationManager locationManager;
     Location marcaUbicacion =new Location("mi marca");
 
 
@@ -192,6 +194,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .fillColor(Color.argb(32, 33, 150, 243));
             //mMap.addMarker(new MarkerOptions().position(MARCA).title("Premio"));
             mMap.addCircle(circuloMarca).setVisible(true);
+        }
+    }
+
+    public void leerPremio(View b){
+        Intent intent = new Intent(getBaseContext(), ScannerActivity.class);
+        int code = 4545; // Esto puede ser cualquier código.
+        startActivityForResult(intent, code);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 4545) {
+
+            if (resultCode == RESULT_OK) {
+                String contents = data.getStringExtra("SCAN_RESULT");
+            }
+            if(resultCode == RESULT_CANCELED){
+                //handle cancel
+            }
         }
     }
 }
