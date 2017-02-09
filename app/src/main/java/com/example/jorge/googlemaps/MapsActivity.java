@@ -32,6 +32,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private GoogleApiClient mGoogleApiClient;
     private static final int LOCATION_REQUEST_CODE = 1;
+    private static final int CAMERA_REQUEST_CODE = 2;
     private static final int PREMIO_REQUEST_CODE = 4545;
     private GoogleMap mMap;
     private Location mLastLocation;
@@ -66,6 +67,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
         mapFragment.getMapAsync(this);
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.CAMERA)) {
+                // Mostrar diálogo explicativo
+            } else {
+                // Solicitar permiso
+                ActivityCompat.requestPermissions(
+                        this,
+                        new String[]{Manifest.permission.CAMERA},
+                        CAMERA_REQUEST_CODE);
+            }
+        }
 
     }
 
@@ -151,6 +167,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Toast.makeText(this, "Error de permisos", Toast.LENGTH_LONG).show();
             }
 
+        }else if(requestCode == CAMERA_REQUEST_CODE){
+            if (permissions.length > 0 &&
+                    permissions[0].equals(Manifest.permission.CAMERA) &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    return;
+                }
+            } else {
+                Toast.makeText(this, "Error de permisos", Toast.LENGTH_LONG).show();
+            }
         }
     }
 
@@ -185,17 +219,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onMapClick(LatLng latLng) {
-        float distanciaPremio = marcaUbicacion.distanceTo(mLastLocation);
+        int distanciaPremio = (int)marcaUbicacion.distanceTo(mLastLocation);
         Toast.makeText(this, "Distancia al premio = " + distanciaPremio + " m", Toast.LENGTH_SHORT).show();
-        if(distanciaPremio <= 20){
+        if(distanciaPremio <= 2000){
+            mMap.addMarker(new MarkerOptions().position(MARCA).title("Premio"));
+        }
+
+        if(distanciaPremio <= 2000){
             CircleOptions circuloMarca = new CircleOptions()
                     .center(MARCA)
                     .radius(20)
                     .strokeColor(Color.parseColor("#FF4000"))
                     .strokeWidth(4)
                     .fillColor(Color.argb(32, 33, 150, 243));
-            //mMap.addMarker(new MarkerOptions().position(MARCA).title("Premio"));
             mMap.addCircle(circuloMarca).setVisible(true);
+
         }
     }
 
