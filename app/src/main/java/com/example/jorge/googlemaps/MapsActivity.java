@@ -28,10 +28,11 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, GoogleMap.OnMapClickListener {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, GoogleMap.OnMapClickListener, GoogleMap.OnMapLongClickListener {
 
     private GoogleApiClient mGoogleApiClient;
     private static final int LOCATION_REQUEST_CODE = 1;
+    private static final int PREMIO_REQUEST_CODE = 4545;
     private GoogleMap mMap;
     private Location mLastLocation;
     private final LatLng MARCA = new LatLng(42.237023, -8.717944);
@@ -95,6 +96,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         mMap.setOnMapClickListener(this);
+        mMap.setOnMapLongClickListener(this);
 
         CircleOptions area = new CircleOptions()
                 .center(CENTRO)
@@ -197,11 +199,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    public void leerPremio(View b){
-        Intent intent = new Intent(getBaseContext(), ScannerActivity.class);
-        int code = 4545; // Esto puede ser cualquier código.
-        startActivityForResult(intent, code);
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -209,11 +206,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (requestCode == 4545) {
 
             if (resultCode == RESULT_OK) {
-                String contents = data.getStringExtra("SCAN_RESULT");
+                String codigoPremio = data.getStringExtra("PREMIO");
+                Toast.makeText(this, codigoPremio, Toast.LENGTH_LONG).show();
             }
             if(resultCode == RESULT_CANCELED){
                 //handle cancel
             }
         }
+    }
+
+    @Override
+    public void onMapLongClick(LatLng latLng) {
+        Intent intent = new Intent(getBaseContext(), ScannerActivity.class);
+        startActivityForResult(intent, PREMIO_REQUEST_CODE);
     }
 }

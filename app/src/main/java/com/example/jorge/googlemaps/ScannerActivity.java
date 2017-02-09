@@ -1,5 +1,6 @@
 package com.example.jorge.googlemaps;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -39,6 +40,10 @@ public class ScannerActivity extends AppCompatActivity implements ZXingScannerVi
     public void handleResult(Result rawResult) {
 
         Log.i("QRCode", rawResult.getText());
+        Intent databack = new Intent();
+        databack.putExtra("PREMIO",rawResult.getText());
+        setResult(RESULT_OK,databack);
+        finish();
 
         mScannerView.resumeCameraPreview(this);
     }
